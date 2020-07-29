@@ -19,14 +19,17 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
+ * 为占位符设置值
  * A parameter handler sets the parameters of the {@code PreparedStatement}.
  *
  * @author Clinton Begin
  */
 public interface ParameterHandler {
 
+  /**获取执行Mapper时传入的参数对象*/
   Object getParameterObject();
 
+  /**用来为JDBC PreparedStatement或者CallableStatement对象设置参数值*/
   void setParameters(PreparedStatement ps)
       throws SQLException;
 

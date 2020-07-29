@@ -29,10 +29,13 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 用来描述<select|update|insert|delete>或者@Select,@Update等注解配置的SQL信息。
+ * 其中包括<select>等标签中的各个属性，和一些其他的属性，如：
+ * 二级缓存实例、解析SQL语句生成的SqlSource实例、Mapper资源路径
+ * Configuration对象的引用，主键生成策略、是否存在嵌入的ResultMap、输出日志
  * @author Clinton Begin
  */
 public final class MappedStatement {
-
   /**Mapper配置文件路径*/
   private String resource;
   /***/
@@ -53,11 +56,14 @@ public final class MappedStatement {
   private boolean useCache;
   private boolean resultOrdered;
   private SqlCommandType sqlCommandType;
+  /**主键生成策略*/
   private KeyGenerator keyGenerator;
   private String[] keyProperties;
   private String[] keyColumns;
+  /**是否有嵌套ResultMap*/
   private boolean hasNestedResultMaps;
   private String databaseId;
+  /**输出日志*/
   private Log statementLog;
   private LanguageDriver lang;
   private String[] resultSets;

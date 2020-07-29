@@ -46,7 +46,10 @@ public class SqlSessionFactoryBuilder {
 
   public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
     try {
+      //创建XMLConfigBuilder对象
       XMLConfigBuilder parser = new XMLConfigBuilder(reader, environment, properties);
+      //调用parse()方法加载主配置文件，创建Configuration对象
+      //调用build 创建SqlSessionFactory
       return build(parser.parse());
     } catch (Exception e) {
       throw ExceptionFactory.wrapException("Error building SqlSession.", e);

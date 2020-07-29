@@ -63,6 +63,7 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
+ * ResultSetHandler接口的默认实现
  * @author Clinton Begin
  * @author Eduardo Macarron
  * @author Iwao AVE!
@@ -177,6 +178,14 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   //
   // HANDLE RESULT SETS
   //
+
+  /**
+   *1:从Statement对象中获取ResultSet对象，然后将ResultSet包装成ResultSetWrapperd对象，
+   * 通过ResultSetWrapper对象能够更方便的获取表字段名称、字段对应的TypeHandler信息
+   * 2：获取Mapper接口及Mapper Sql配置生成的ResultMap信息，一条语句一般对应一个ResultMap
+   * 3:调用handlerResultSet()方法对ResultSetWrapper对象进行处理，将生成的实体对象存放在
+   * multipleResults列表中
+   */
   @Override
   public List<Object> handleResultSets(Statement stmt) throws SQLException {
     ErrorContext.instance().activity("handling results").object(mappedStatement.getId());
@@ -184,19 +193,23 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     final List<Object> multipleResults = new ArrayList<>();
 
     int resultSetCount = 0;
+    //获取resultSet对象，将ResultSet对象包装成ResultSetWrapper对象
     ResultSetWrapper rsw = getFirstResultSet(stmt);
 
+    //获取resultMap信息
     List<ResultMap> resultMaps = mappedStatement.getResultMaps();
     int resultMapCount = resultMaps.size();
     validateResultMapsCount(rsw, resultMapCount);
     while (rsw != null && resultMapCount > resultSetCount) {
       ResultMap resultMap = resultMaps.get(resultSetCount);
+      //调用handleResultSet 方法处理结果集
       handleResultSet(rsw, resultMap, multipleResults, null);
       rsw = getNextResultSet(stmt);
       cleanUpAfterHandlingResultSet();
       resultSetCount++;
     }
 
+    //如果resultSets 不是空处理resultSets
     String[] resultSets = mappedStatement.getResultSets();
     if (resultSets != null) {
       while (rsw != null && resultSetCount < resultSets.length) {
@@ -211,7 +224,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         resultSetCount++;
       }
     }
-
+    //对multipleResults 进行处理，如果只有一个结果集，则返回结果集中的元素，否则返回多个结果集
     return collapseSingleResultList(multipleResults);
   }
 

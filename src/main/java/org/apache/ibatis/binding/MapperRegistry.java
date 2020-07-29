@@ -34,6 +34,9 @@ import org.apache.ibatis.session.SqlSession;
 public class MapperRegistry {
 
   private final Configuration config;
+  /**
+   *注册Mapper 接口对象和对应的MapperProxyFactory对应关系
+   */
   private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<>();
 
   public MapperRegistry(Configuration config) {
@@ -41,6 +44,9 @@ public class MapperRegistry {
   }
 
   @SuppressWarnings("unchecked")
+  /**
+   * 根据调用的Class类型，创建对应的代理类
+   */
   public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
     final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
     if (mapperProxyFactory == null) {
@@ -57,8 +63,12 @@ public class MapperRegistry {
     return knownMappers.containsKey(type);
   }
 
+  /**
+   * 为指定的mapper接口创建对应的代理工厂，并注册到对应关系集合中（knownMappers）
+   */
   public <T> void addMapper(Class<T> type) {
     if (type.isInterface()) {
+      //不能重复注册
       if (hasMapper(type)) {
         throw new BindingException("Type " + type + " is already known to the MapperRegistry.");
       }

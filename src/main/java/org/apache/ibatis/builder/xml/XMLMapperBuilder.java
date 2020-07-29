@@ -91,13 +91,18 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   public void parse() {
     if (!configuration.isResourceLoaded(resource)) {
+      //调用XPathParser的evalNode接口获取根节点对应的XNode对象
       configurationElement(parser.evalNode("/mapper"));
+      //将资源路径添加到Configuration对象中
       configuration.addLoadedResource(resource);
       bindMapperForNamespace();
     }
 
+    //继续解析之前解析出现异常的ResultMaps对象
     parsePendingResultMaps();
+    //继续解析之前解析出现异常的CacheRefs对象
     parsePendingCacheRefs();
+    //继续解析之前解析出现异常的<select|update|insert|delete> 标签配置
     parsePendingStatements();
   }
 
